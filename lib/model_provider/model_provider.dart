@@ -112,7 +112,7 @@ abstract class AbstractModelController<T extends AbstractModel> {
 
   set isLoading(bool isLoading);
 
-  void _bind(BuildContext context,ModelListener listener);
+  void _bind(BuildContext context, ModelListener listener);
 
   void initialize(BuildContext context) {
     this.context = context;

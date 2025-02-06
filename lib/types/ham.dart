@@ -7,7 +7,14 @@ class Ham {
   final String? state;
   final String? zip;
 
-  Ham({required this.fccId, required this.callSign, this.fullName, this.address1, this.city, this.state, this.zip});
+  Ham(
+      {required this.fccId,
+      required this.callSign,
+      this.fullName,
+      this.address1,
+      this.city,
+      this.state,
+      this.zip});
 
   operator ==(o) => o is Ham && o.fccId == fccId && o.callSign == callSign;
 

@@ -4,6 +4,5 @@ enum SortDirection { none, asc, desc }
 
 class SortDetails extends Model {
   SortDirection direction = SortDirection.none;
-  int column=0;
-
+  int column = 0;
 }

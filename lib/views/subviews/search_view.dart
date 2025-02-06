@@ -50,19 +50,17 @@ class _SearchViewState extends ModelState<SearchView, HomeViewController> {
                         controller.fccDatabaseController.setTabAndSearchTerm(
                             tab: SearchTab.address, searchTerm: value);
                       }
-                    }
-                ),
+                    }),
                 SearchBar(
-                  leading: const Icon(Icons.search),
-                  hintText: 'City',
-                  elevation: WidgetStatePropertyAll<double>(0.0),
-                  onChanged: (value) {
-                    if (value.length > 1) {
-                      controller.fccDatabaseController.setTabAndSearchTerm(
-                          tab: SearchTab.city, searchTerm: value);
-                    }
-                  }
-                ),
+                    leading: const Icon(Icons.search),
+                    hintText: 'City',
+                    elevation: WidgetStatePropertyAll<double>(0.0),
+                    onChanged: (value) {
+                      if (value.length > 1) {
+                        controller.fccDatabaseController.setTabAndSearchTerm(
+                            tab: SearchTab.city, searchTerm: value);
+                      }
+                    }),
                 SearchBar(
                     leading: const Icon(Icons.search),
                     hintText: 'State',
@@ -72,8 +70,7 @@ class _SearchViewState extends ModelState<SearchView, HomeViewController> {
                         controller.fccDatabaseController.setTabAndSearchTerm(
                             tab: SearchTab.state, searchTerm: value);
                       }
-                    }
-                )
+                    })
               ]),
             )
           ],

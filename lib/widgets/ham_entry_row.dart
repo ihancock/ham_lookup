@@ -61,7 +61,9 @@ class _HamEntryRowState extends State<HamEntryRow> {
             SizedBox(
                 width: 120,
                 child: Text(
-                  (widget.ham.zip?.length??0)>5?'${widget.ham.zip!.substring(0,5)}-${widget.ham.zip!.substring(5)}':widget.ham.zip??'--' ,
+                  (widget.ham.zip?.length ?? 0) > 5
+                      ? '${widget.ham.zip!.substring(0, 5)}-${widget.ham.zip!.substring(5)}'
+                      : widget.ham.zip ?? '--',
                 ))
           ],
         ),

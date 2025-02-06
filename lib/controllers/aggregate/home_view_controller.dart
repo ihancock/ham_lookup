@@ -7,7 +7,7 @@ class HomeViewController extends AggregateModelController {
   late SortDetailsController sortDetailsController;
 
   HomeViewController() {
-    fccDatabaseController=registerController(FccDatabaseController());
-    sortDetailsController=registerController(SortDetailsController());
+    fccDatabaseController = registerController(FccDatabaseController());
+    sortDetailsController = registerController(SortDetailsController());
   }
 }

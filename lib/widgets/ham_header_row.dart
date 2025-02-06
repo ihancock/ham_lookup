@@ -76,62 +76,70 @@ class _HamHeaderRowState
                       })
                 ],
               )),
-          SizedBox(width: 220, child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Text('Address'),
-              SortControl(
-                  direction: controller.model.column == 3
-                      ? controller.model.direction
-                      : SortDirection.none,
-                  onChange: (direction) {
-                    controller.setSortColumnAndDirection(
-                        column: 3, direction: direction);
-                  })
-            ],
-          )),
-          SizedBox(width: 180, child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Text('City'),
-              SortControl(
-                  direction: controller.model.column == 4
-                      ? controller.model.direction
-                      : SortDirection.none,
-                  onChange: (direction) {
-                    controller.setSortColumnAndDirection(
-                        column: 4, direction: direction);
-                  })
-            ],
-          )),
-          SizedBox(width: 100, child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Text('State'),
-              SortControl(
-                  direction: controller.model.column == 5
-                      ? controller.model.direction
-                      : SortDirection.none,
-                  onChange: (direction) {
-                    controller.setSortColumnAndDirection(
-                        column: 5, direction: direction);
-                  })
-            ],
-          )),
-          SizedBox(width: 120, child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Text('Zip'),
-              SortControl(
-                  direction: controller.model.column == 6
-                      ? controller.model.direction
-                      : SortDirection.none,
-                  onChange: (direction) {
-                    controller.setSortColumnAndDirection(
-                        column: 6, direction: direction);
-                  })
-            ],
-          )),
+          SizedBox(
+              width: 220,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text('Address'),
+                  SortControl(
+                      direction: controller.model.column == 3
+                          ? controller.model.direction
+                          : SortDirection.none,
+                      onChange: (direction) {
+                        controller.setSortColumnAndDirection(
+                            column: 3, direction: direction);
+                      })
+                ],
+              )),
+          SizedBox(
+              width: 180,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text('City'),
+                  SortControl(
+                      direction: controller.model.column == 4
+                          ? controller.model.direction
+                          : SortDirection.none,
+                      onChange: (direction) {
+                        controller.setSortColumnAndDirection(
+                            column: 4, direction: direction);
+                      })
+                ],
+              )),
+          SizedBox(
+              width: 100,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text('State'),
+                  SortControl(
+                      direction: controller.model.column == 5
+                          ? controller.model.direction
+                          : SortDirection.none,
+                      onChange: (direction) {
+                        controller.setSortColumnAndDirection(
+                            column: 5, direction: direction);
+                      })
+                ],
+              )),
+          SizedBox(
+              width: 120,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text('Zip'),
+                  SortControl(
+                      direction: controller.model.column == 6
+                          ? controller.model.direction
+                          : SortDirection.none,
+                      onChange: (direction) {
+                        controller.setSortColumnAndDirection(
+                            column: 6, direction: direction);
+                      })
+                ],
+              )),
         ],
       ),
     );

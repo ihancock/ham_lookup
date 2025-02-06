@@ -3,7 +3,6 @@ import 'package:ham_lookup/model_provider/model_provider.dart';
 import 'package:ham_lookup/router.dart';
 import 'package:ham_lookup/widgets/app_bar_generator.dart';
 
-
 void main() {
   runApp(const MyApp());
 }

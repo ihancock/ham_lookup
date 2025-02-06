@@ -86,8 +86,7 @@ class FccDatabaseController extends ModelController<FccDatabase> {
     await extractArchiveToDisk(archive, directory.path);
   }
 
-  Future<void> _processArchive(
-      {required String suffix}) async {
+  Future<void> _processArchive({required String suffix}) async {
     final Directory tempDir = await getTemporaryDirectory();
     final Directory directory = Directory('${tempDir.path}/$suffix');
     final enDataFile = File('${directory.path}/EN.dat');
