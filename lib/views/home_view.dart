@@ -5,8 +5,10 @@ import 'package:ham_lookup/models/fcc_database.dart';
 import 'package:ham_lookup/models/sort_details.dart';
 import 'package:ham_lookup/types/ham.dart';
 import 'package:ham_lookup/views/subviews/search_view.dart';
+import 'package:ham_lookup/widgets/app_bar_generator.dart';
 import 'package:ham_lookup/widgets/ham_entry_row.dart';
 import 'package:ham_lookup/widgets/ham_header_row.dart';
+import 'package:ham_lookup/widgets/loading_indicator.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -27,9 +29,7 @@ class _HomeViewState extends ModelState<HomeView, HomeViewController> {
   }
 
   Future<void> initializeData() async {
-    await controller.fccDatabaseController.fullSync();
-
-    setState(() {});
+    await controller.fccDatabaseController.downloadDatabase();
   }
 
   @override
@@ -116,27 +116,39 @@ class _HomeViewState extends ModelState<HomeView, HomeViewController> {
         break;
       default:
     }
-    return Scaffold(
-      body: Column(
-        children: [
-          SearchView(),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
-          ),
-          HamHeaderRow(),
-          Container(
-            padding: const EdgeInsets.fromLTRB(8, 0, 8, 4),
-            height: MediaQuery.of(context).size.height - 190,
-            child: ListView.builder(
-                prototypeItem:
-                    HamEntryRow(ham: Ham(fccId: '--', callSign: '--')),
-                itemCount: results.length,
-                itemBuilder: (context, idx) {
-                  final ham = results[idx];
-                  return HamEntryRow(ham: ham);
-                }),
-          ),
-        ],
+    return LoadingIndicator(
+      isLoading: controller.isLoading,
+      child: Scaffold(
+        appBar: AppBarGenerator.of(context).generateAppBar(
+            title: 'Home',
+            syncStatus: controller.fccDatabaseController.model.syncStatus,
+            recordCount: controller.fccDatabaseController.model.hams.length,
+            onSyncTapped: () async {
+              print('Sync Tapped');
+              await controller.fccDatabaseController.downloadDatabase();
+            }),
+        drawer: AppBarGenerator.of(context).generateDrawer(),
+        body: Column(
+          children: [
+            SearchView(),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
+            ),
+            HamHeaderRow(),
+            Container(
+              padding: const EdgeInsets.fromLTRB(8, 0, 8, 4),
+              height: MediaQuery.of(context).size.height - 246,
+              child: ListView.builder(
+                  prototypeItem:
+                      HamEntryRow(ham: Ham(fccId: '--', callSign: '--')),
+                  itemCount: results.length,
+                  itemBuilder: (context, idx) {
+                    final ham = results[idx];
+                    return HamEntryRow(ham: ham);
+                  }),
+            ),
+          ],
+        ),
       ),
     );
   }

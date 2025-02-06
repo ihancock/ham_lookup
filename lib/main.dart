@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ham_lookup/model_provider/model_provider.dart';
 import 'package:ham_lookup/router.dart';
+import 'package:ham_lookup/widgets/app_bar_generator.dart';
 
 
 void main() {
@@ -14,12 +15,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ModelProvider(
-      child: MaterialApp.router(
-        title: 'Ham Lookup',
-        theme: ThemeData(
-          useMaterial3: true,
+      child: AppBarGenerator(
+        child: MaterialApp.router(
+          title: 'Ham Lookup',
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            useMaterial3: true,
+          ),
+          routerConfig: router,
         ),
-        routerConfig: router,
       ),
     );
   }

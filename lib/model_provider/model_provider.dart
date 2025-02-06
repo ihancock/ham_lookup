@@ -43,6 +43,7 @@ class _ModelProviderInherited extends InheritedWidget {
   final ModelProviderState data;
 
   const _ModelProviderInherited({
+    // ignore: unused_element
     super.key,
     required this.data,
     required super.child,
@@ -104,11 +105,10 @@ abstract class AbstractModel {
 
 abstract class AbstractModelController<T extends AbstractModel> {
   late BuildContext context;
+
   bool _isLoading = false;
 
-  bool get isLoading {
-    return _isLoading;
-  }
+  bool get isLoading;
 
   set isLoading(bool isLoading);
 
@@ -127,8 +127,10 @@ class ModelController<M extends Model> extends AbstractModelController {
   set isLoading(bool isLoading) {
     _isLoading = isLoading;
     model._notify();
-
   }
+
+  @override
+  bool get isLoading => _isLoading;
 
   ModelController({required M Function() modelCreator}) {
     _modelCreator = modelCreator;
@@ -137,6 +139,7 @@ class ModelController<M extends Model> extends AbstractModelController {
   @override
   void _bind(BuildContext context, ModelListener listener) {
     final modelProvider = ModelProvider.of(context);
+    initialize(context);
     model = modelProvider.bindModel(_modelCreator) as M;
     model.unBindListener(listener);
     model.bindListener(listener);
@@ -156,6 +159,11 @@ class AggregateModelController extends AbstractModelController {
   set isLoading(bool isLoading) {
     _isLoading = isLoading;
     controllers.first.model._notify();
+  }
+
+  bool get isLoading {
+    var result = controllers.any((element) => element.isLoading) || _isLoading;
+    return result;
   }
 
   C registerController<C extends ModelController>(C controller) {
