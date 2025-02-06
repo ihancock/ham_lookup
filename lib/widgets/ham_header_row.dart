@@ -45,7 +45,7 @@ class _HamHeaderRowState
                 ],
               )),
           SizedBox(
-              width: 101,
+              width: 110,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [

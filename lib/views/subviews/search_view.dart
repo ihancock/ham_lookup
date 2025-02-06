@@ -17,6 +17,7 @@ class _SearchViewState extends ModelState<SearchView, HomeViewController> {
   Widget build(BuildContext context) {
     final tabs = [
       Tab(icon: Icon(Icons.radio), text: 'Call Sign'),
+      Tab(icon: Icon(Icons.person), text: 'Name'),
       Tab(icon: Icon(Icons.house), text: 'Address'),
       Tab(icon: Icon(Icons.location_city), text: 'City'),
       Tab(icon: Icon(Icons.map), text: 'State')
@@ -38,6 +39,17 @@ class _SearchViewState extends ModelState<SearchView, HomeViewController> {
                     if (value.length > 1) {
                       controller.fccDatabaseController.setTabAndSearchTerm(
                           tab: SearchTab.callSign, searchTerm: value);
+                    }
+                  },
+                ),
+                SearchBar(
+                  leading: const Icon(Icons.search),
+                  hintText: 'Name',
+                  elevation: WidgetStatePropertyAll<double>(0.0),
+                  onChanged: (value) {
+                    if (value.length > 1) {
+                      controller.fccDatabaseController.setTabAndSearchTerm(
+                          tab: SearchTab.name, searchTerm: value);
                     }
                   },
                 ),

@@ -1,7 +1,7 @@
 import 'package:ham_lookup/types/ham.dart';
 import 'package:ham_lookup/model_provider/model_provider.dart';
 
-enum SearchTab { address, callSign, city, state }
+enum SearchTab { address, callSign,name,  city, state }
 
 enum SyncStatus { none, inProgress, complete }
 

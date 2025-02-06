@@ -23,47 +23,10 @@ class AppBarGeneratorState extends State<AppBarGenerator> {
 
   AppBar generateAppBar(
       {required String title,
-      SyncStatus? syncStatus,
-      required,
-      required int recordCount,
-      VoidCallback? onSyncTapped}) {
-    Widget syncWidget = SizedBox.shrink();
-    switch (syncStatus) {
-      case SyncStatus.none:
-        syncWidget = const Text(
-          'FCC Database out of date',
-          style: TextStyle(color: Colors.red),
-        );
-        break;
-      case SyncStatus.inProgress:
-        syncWidget = const Text(
-          'Syncing FCC Database',
-          style: TextStyle(color: Colors.black38),
-        );
-        break;
-      case SyncStatus.complete:
-        syncWidget = Text(
-          'Synced FCC Database $recordCount records',
-          style: TextStyle(color: Colors.green),
-        );
-        break;
-      default:
-        syncWidget = SizedBox.shrink();
-    }
+ }) {
+
     return AppBar(
       title: Text(title),
-      actions: [
-        syncWidget,
-        onSyncTapped != null
-            ? IconButton(
-                icon: const Icon(Icons.sync),
-                onPressed: onSyncTapped,
-              )
-            : SizedBox.shrink(),
-        SizedBox(
-          width: 16,
-        )
-      ],
     );
   }
 
