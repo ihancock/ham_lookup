@@ -3,7 +3,7 @@ import 'package:ham_lookup/types/entity_type.dart';
 import 'package:ham_lookup/types/status_code.dart';
 
 class EnRecord {
-  final String fccId;
+  final int fccId;
   final String ulsFileNumber;
   final String ebfNumber;
   final String callSign;
@@ -59,7 +59,7 @@ class EnRecord {
       required this.statusDate});
 
   EnRecord.empty()
-      : fccId = '',
+      : fccId = 0,
         ulsFileNumber = '',
         ebfNumber = '',
         callSign = '',

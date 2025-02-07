@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:ham_lookup/types/en_record.dart';
 
-import 'package:ham_lookup/widgets/ham_details.dart';
+import 'package:ham_lookup/views/subviews/ham_details.dart';
 
 class HamEntryRow extends StatefulWidget {
   final EnRecord enRecord;
   final HamDetails Function() onTap;
 
   const HamEntryRow({super.key, required this.enRecord, required this.onTap});
-  
-  
 
   @override
   State<HamEntryRow> createState() => _HamEntryRowState();
@@ -58,7 +56,7 @@ class _HamEntryRowState extends State<HamEntryRow> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SizedBox(width: 100, child: Text(widget.enRecord.fccId)),
+              SizedBox(width: 100, child: Text('${widget.enRecord.fccId}')),
               SizedBox(width: 101, child: Text(widget.enRecord.callSign)),
               SizedBox(
                   width: 200,

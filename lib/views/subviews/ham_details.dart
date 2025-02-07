@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:ham_lookup/controllers/ffc_database_controller.dart';
 import 'package:ham_lookup/model_provider/model_provider.dart';
@@ -35,6 +34,7 @@ class _HamDetailsState extends ModelState<HamDetails, FccDatabaseController> {
 
   @override
   Widget build(BuildContext context) {
+    print(ham);
     return Container(
       width: MediaQuery.of(context).size.width - 16,
       child: SingleChildScrollView(
@@ -47,18 +47,18 @@ class _HamDetailsState extends ModelState<HamDetails, FccDatabaseController> {
               Wrap(
                 children: ham.relatedRecords
                     .map((e) => Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          ham = controller.hamFromEnRecord(e);
-                        });
-                      },
-                      child: Text(
-                        e.callSign,
-                        style: TextStyle(color: Colors.blueAccent),
-                      )),
-                ))
+                          padding: const EdgeInsets.only(right: 8),
+                          child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  ham = controller.hamFromEnRecord(e);
+                                });
+                              },
+                              child: Text(
+                                e.callSign,
+                                style: TextStyle(color: Colors.blueAccent),
+                              )),
+                        ))
                     .toList(),
               ),
             ),
@@ -72,17 +72,22 @@ class _HamDetailsState extends ModelState<HamDetails, FccDatabaseController> {
                   _buildRow('Call Sign:', ham.enRecord.callSign),
                   _buildRow('Entity Name:', ham.enRecord.entityName),
                   _buildRow('FRN:', ham.enRecord.frn),
-                  _buildRow('Entity Type:', ham.enRecord.entityType?.description ?? '--'),
+                  _buildRow('Entity Type:',
+                      ham.enRecord.entityType?.description ?? '--'),
                   _buildRow('Attention Of:', ham.enRecord.attentionLine),
                   _buildRow('Address:', ham.enRecord.streetAddress),
                   _buildRow('City:', ham.enRecord.city),
                   _buildRow('State:', ham.enRecord.state),
-                  _buildRow('Zip:', (ham.enRecord.zip.length) > 5
-                      ? '${ham.enRecord.zip.substring(0, 5)}-${ham.enRecord.zip.substring(5)}'
-                      : ham.enRecord.zip,),
+                  _buildRow(
+                    'Zip:',
+                    (ham.enRecord.zip.length) > 5
+                        ? '${ham.enRecord.zip.substring(0, 5)}-${ham.enRecord.zip.substring(5)}'
+                        : ham.enRecord.zip,
+                  ),
                   _buildRow('Phone:', ham.enRecord.phone),
                   _buildRow('Email:', ham.enRecord.email),
-                  _buildRow('Status:', ham.enRecord.statusCode?.description ?? ''),
+                  _buildRow(
+                      'Status:', ham.enRecord.statusCode?.description ?? ''),
                   _buildRow('Status Date:', ham.enRecord.statusDate),
                 ],
               ),
@@ -93,18 +98,26 @@ class _HamDetailsState extends ModelState<HamDetails, FccDatabaseController> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildRow('Operator Class:', ham.amRecord.operatorClass?.description??''),
+                  _buildRow('Operator Class:',
+                      ham.amRecord.operatorClass?.description ?? ''),
                   _buildRow('Group Code:', ham.amRecord.groupCode),
                   _buildRow('Region Code:', ham.amRecord.regionCode),
                   _buildRow('Trustee Call Sign:', ham.amRecord.trusteeCallSign),
-                  _buildRow('Trustee Indicator:', ham.amRecord.trusteeIndicator),
-                  _buildRow('Physician Certification:', ham.amRecord.physicianCertification),
+                  _buildRow(
+                      'Trustee Indicator:', ham.amRecord.trusteeIndicator),
+                  _buildRow('Physician Certification:',
+                      ham.amRecord.physicianCertification),
                   _buildRow('VE Signature:', ham.amRecord.veSignature),
-                  _buildRow('Systemic Call Sign Change:', ham.amRecord.systemicCallSignChange),
-                  _buildRow('Vanity Call Sign Change:', ham.amRecord.vanityCallSignChange),
-                  _buildRow('Vanity Relation Ship:', ham.amRecord.vanityRelationShip),
-                  _buildRow('Previous CallSign:', ham.amRecord.previousCallSign),
-                  _buildRow('Previous Operator Class:', ham.amRecord.previousOperatorClass),
+                  _buildRow('Systemic Call Sign Change:',
+                      ham.amRecord.systemicCallSignChange),
+                  _buildRow('Vanity Call Sign Change:',
+                      ham.amRecord.vanityCallSignChange),
+                  _buildRow(
+                      'Vanity Relation Ship:', ham.amRecord.vanityRelationShip),
+                  _buildRow(
+                      'Previous CallSign:', ham.amRecord.previousCallSign),
+                  _buildRow('Previous Operator Class:',
+                      ham.amRecord.previousOperatorClass),
                   _buildRow('Trustee Name:', ham.amRecord.trusteeName),
                 ],
               ),
@@ -126,9 +139,7 @@ class _HamDetailsState extends ModelState<HamDetails, FccDatabaseController> {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-                color: Colors.black12,
-                blurRadius: 4,
-                offset: Offset(0, 4))
+                color: Colors.black12, blurRadius: 4, offset: Offset(0, 4))
           ]),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -147,15 +158,15 @@ class _HamDetailsState extends ModelState<HamDetails, FccDatabaseController> {
     );
   }
 
-  Widget _buildRow(String label, String value) {
+  Widget _buildRow(String label, Object value) {
     return Padding(
-      padding: const EdgeInsets.only(bottom:8.0),
+      padding: const EdgeInsets.only(bottom: 8.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(label),
-          Text(value, style: TextStyle(fontWeight: FontWeight.bold)),
+          Text('$value', style: TextStyle(fontWeight: FontWeight.bold)),
         ],
       ),
     );

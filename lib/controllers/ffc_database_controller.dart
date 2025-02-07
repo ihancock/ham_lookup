@@ -8,11 +8,13 @@ import 'package:ham_lookup/models/sort_details.dart';
 import 'package:ham_lookup/string_extensions.dart';
 import 'package:ham_lookup/types/am_record.dart';
 import 'package:ham_lookup/types/applicant_type.dart';
+import 'package:ham_lookup/types/co_record.dart';
 import 'package:ham_lookup/types/en_record.dart';
 import 'package:ham_lookup/types/entity_type.dart';
 import 'package:ham_lookup/model_provider/model_provider.dart';
 import 'package:ham_lookup/models/fcc_database.dart';
 import 'package:ham_lookup/types/ham.dart';
+import 'package:ham_lookup/types/hd_record.dart';
 import 'package:ham_lookup/types/operator_class.dart';
 import 'package:ham_lookup/types/status_code.dart';
 import 'package:http/http.dart' as http;
@@ -101,7 +103,6 @@ class FccDatabaseController extends ModelController<FccDatabase> {
   }
 
   Future<void> _processArchive({required String suffix}) async {
-
     List<Future> tasks = [];
 
     final Directory tempDir = await getTemporaryDirectory();
@@ -114,7 +115,7 @@ class FccDatabaseController extends ModelController<FccDatabase> {
         .forEach((line) async {
       final fields = line.split('|');
       model.enRecords.add(EnRecord(
-          fccId: fields[1],
+          fccId: int.parse(fields[1]),
           ulsFileNumber: fields[2],
           ebfNumber: fields[3],
           callSign: fields[4],
@@ -154,7 +155,7 @@ class FccDatabaseController extends ModelController<FccDatabase> {
         .forEach((line) async {
       final fields = line.split('|');
       model.amRecords.add(AmRecord(
-          fccId: fields[1],
+          fccId: int.parse(fields[1]),
           callSign: fields[4],
           operatorClass: OperatorClass.values
               .firstWhereOrNull((e) => e.name.toUpperCase() == fields[5]),
@@ -170,6 +171,104 @@ class FccDatabaseController extends ModelController<FccDatabase> {
           previousCallSign: fields[15],
           previousOperatorClass: fields[16],
           trusteeName: fields[17]));
+    }));
+    final hdDataFile = File('${directory.path}/HD.dat');
+    tasks.add(hdDataFile
+        .openRead()
+        .transform(utf8.decoder)
+        .transform(LineSplitter())
+        .forEach((line) async {
+      final fields = line.split('|');
+      model.hdRecords.add(HdRecord(
+          fccId: int.parse(fields[1]),
+          ulsFileNumber: fields[2],
+          ebfNumber: fields[3],
+          callSign: fields[4],
+          licenseStatus: fields[5],
+          radioServiceCode: fields[6],
+          grantDate: fields[7],
+          expiredDate: fields[8],
+          cancellationDate: fields[9],
+          eligibilityRuleNum: fields[10],
+          alien: fields[12],
+          alienGovernment: fields[13],
+          alienCorporation: fields[14],
+          alienOfficer: fields[15],
+          alienControl: fields[16],
+          revoked: fields[17],
+          convicted: fields[18],
+          adjudged: fields[19],
+          commonCarrier: fields[21],
+          nonCommonCarrier: fields[22],
+          privateComm: fields[23],
+          fixed: fields[24],
+          mobile: fields[25],
+          radioLocation: fields[26],
+          satellite: fields[27],
+          developmentalOrStaOrDemonstration: fields[28],
+          interconnectedService: fields[29],
+          certifierFirstName: fields[30],
+          certifierMi: fields[31],
+          certifierLastName: fields[32],
+          certifierSuffix: fields[33],
+          certifierTitle: fields[34],
+          female: fields[35],
+          blackOrAfricanAmerican: fields[36],
+          nativeAmerican: fields[37],
+          hawaiian: fields[38],
+          asian: fields[39],
+          white: fields[40],
+          hispanic: fields[41],
+          effectiveDate: fields[42],
+          lastActionDate: fields[43],
+          auctionId: fields[44],
+          broadcastServicesRegulatoryStatus: fields[45],
+          bandManagerRegulatoryStatus: fields[46],
+          broadcastServicesTypeOfRadioService: fields[47],
+          alienRuling: fields[48],
+          licenseeNameChange: fields[49],
+          whitespaceIndicator: fields[50],
+          operationPerformanceRequirementChoice: fields[51],
+          operationPerformanceRequirementAnswer: fields[52],
+          discontinuationOfService: fields[53],
+          regulatoryCompliance: fields[54],
+          freq900MhzEligibilityCertification: fields[55],
+          freq900MhzTransitionPlanCertification: fields[56],
+          freq900MhzReturnSpectrumCertification: fields[57],
+          freq900MhzPaymentCertification: fields[58]));
+    }));
+    final coDataFile = File('${directory.path}/CO.dat');
+    bool deferred = false;
+    String deferredLine = '';
+    tasks.add(coDataFile
+        .openRead()
+        .transform(utf8.decoder)
+        .transform(LineSplitter())
+        .forEach((line) async {
+      var fields = line.split('|');
+
+      if (fields.length != 8 && !deferred) {
+        deferred = true;
+        deferredLine = line;
+      } else if (deferred) {
+        deferredLine += line;
+        if (deferredLine.split('|').length == 8) {
+          deferred = false;
+          fields = deferredLine.split('|');
+          deferredLine = '';
+        }
+      }
+      if (!deferred) {
+        model.coRecords.add(CoRecord(
+            fccId: int.parse(fields[1]),
+            ulsFileNumber: fields[2],
+            callSign: fields[3],
+            commentDate: fields[4],
+            description: fields[5],
+            statusCode: StatusCode.values
+                .firstWhereOrNull((e) => e.name.toUpperCase() == fields[6]),
+            statusDate: fields[7]));
+      }
     }));
     await Future.wait(tasks);
   }
@@ -249,11 +348,9 @@ class FccDatabaseController extends ModelController<FccDatabase> {
     switch (column) {
       case 0:
         if (direction == SortDirection.asc) {
-          results.sort(
-              (a, b) => (int.parse(a.fccId)).compareTo(int.parse(b.fccId)));
+          results.sort((a, b) => a.fccId.compareTo(b.fccId));
         } else {
-          results.sort(
-              (b, a) => (int.parse(a.fccId)).compareTo(int.parse(b.fccId)));
+          results.sort((b, a) => a.fccId.compareTo(b.fccId));
         }
         break;
       case 1:
@@ -309,7 +406,10 @@ class FccDatabaseController extends ModelController<FccDatabase> {
     return Ham(
         enRecord: enRecord,
         amRecord: model.amRecords.firstWhere((e) => e.fccId == enRecord.fccId),
-    relatedRecords: getRelatedRecords(enRecord));
+        hdRecord: model.hdRecords.firstWhere((e) => e.fccId == enRecord.fccId),
+        coRecords:
+            model.coRecords.where((e) => e.fccId == enRecord.fccId).toList(),
+        relatedRecords: getRelatedRecords(enRecord));
   }
 
   List<EnRecord> getRelatedRecords(EnRecord enRecord) {

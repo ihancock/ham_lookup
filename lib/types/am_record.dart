@@ -1,7 +1,7 @@
 import 'package:ham_lookup/types/operator_class.dart';
 
 class AmRecord {
-  final String fccId;
+  final int fccId;
   final String callSign;
   final OperatorClass? operatorClass;
   final String groupCode;
@@ -33,24 +33,6 @@ class AmRecord {
       required this.previousCallSign,
       required this.previousOperatorClass,
       required this.trusteeName});
-
-  AmRecord.empty():
-      fccId = '',
-      callSign = '',
-      operatorClass = null,
-      groupCode = '',
-      regionCode = '',
-      trusteeCallSign = '',
-      trusteeIndicator = '',
-      physicianCertification = '',
-      veSignature = '',
-      systemicCallSignChange = '',
-      vanityCallSignChange = '',
-      vanityRelationShip = '',
-      previousCallSign = '',
-      previousOperatorClass = '',
-      trusteeName = '';
-
 
   @override
   String toString() {
