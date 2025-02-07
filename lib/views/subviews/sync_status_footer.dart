@@ -66,8 +66,9 @@ class _SyncStatusFooterState
       connected = !_connectionStatus.contains(ConnectivityResult.none);
       if (connected &&
           previousConnectionStatus.contains(ConnectivityResult.none)) {
-        controller.downloadDatabase();
+        //  controller.downloadDatabase(connected);
       }
+      controller.downloadDatabase(connected);
     });
     // ignore: avoid_print
     print('Connectivity changed: $_connectionStatus');
@@ -95,8 +96,6 @@ class _SyncStatusFooterState
           style: TextStyle(color: Colors.green),
         );
         break;
-      default:
-        syncWidget = SizedBox.shrink();
     }
     return Container(
         height: 50,
@@ -116,12 +115,12 @@ class _SyncStatusFooterState
                     color: Colors.red,
                   ),
             Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
+                padding: const EdgeInsets.only(left: 8, right: 16),
                 child: syncWidget),
             IconButton(
               icon: const Icon(Icons.sync),
               onPressed: () async {
-                await controller.downloadDatabase();
+                await controller.downloadDatabase(connected);
               },
             ),
           ],

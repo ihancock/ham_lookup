@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:ham_lookup/models/fcc_database.dart';
 
 class AppBarGenerator extends StatefulWidget {
   final Widget child;
@@ -21,10 +20,9 @@ class AppBarGeneratorState extends State<AppBarGenerator> {
     return _AppBarGeneratorInherited(data: this, child: widget.child);
   }
 
-  AppBar generateAppBar(
-      {required String title,
- }) {
-
+  AppBar generateAppBar({
+    required String title,
+  }) {
     return AppBar(
       title: Text(title),
     );

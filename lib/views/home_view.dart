@@ -30,8 +30,8 @@ class _HomeViewState extends ModelState<HomeView, HomeViewController> {
       isLoading: controller.isLoading,
       child: Scaffold(
         appBar: AppBarGenerator.of(context).generateAppBar(
-            title: 'FCC Search',
-      ),
+          title: 'FCC Search',
+        ),
         drawer: AppBarGenerator.of(context).generateDrawer(),
         bottomNavigationBar: SyncStatusFooter(),
         body: Column(
@@ -51,8 +51,7 @@ class _HomeViewState extends ModelState<HomeView, HomeViewController> {
                       padding: const EdgeInsets.fromLTRB(8, 0, 8, 4),
                       height: MediaQuery.of(context).size.height - 358,
                       child: ListView.builder(
-                          prototypeItem: HamEntryRow(
-                              ham: Ham(fccId: '--', callSign: '--')),
+                          prototypeItem: HamEntryRow(ham: Ham.empty()),
                           itemCount: results.length,
                           itemBuilder: (context, idx) {
                             final ham = results[idx];
