@@ -13,6 +13,7 @@ import 'package:ham_lookup/types/entity_type.dart';
 import 'package:ham_lookup/model_provider/model_provider.dart';
 import 'package:ham_lookup/models/fcc_database.dart';
 import 'package:ham_lookup/types/ham.dart';
+import 'package:ham_lookup/types/operator_class.dart';
 import 'package:ham_lookup/types/status_code.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
@@ -155,7 +156,8 @@ class FccDatabaseController extends ModelController<FccDatabase> {
       model.amRecords.add(AmRecord(
           fccId: fields[1],
           callSign: fields[4],
-          operatorClass: fields[5],
+          operatorClass: OperatorClass.values
+              .firstWhereOrNull((e) => e.name.toUpperCase() == fields[5]),
           groupCode: fields[6],
           regionCode: fields[7],
           trusteeCallSign: fields[8],
@@ -306,6 +308,13 @@ class FccDatabaseController extends ModelController<FccDatabase> {
   Ham hamFromEnRecord(EnRecord enRecord) {
     return Ham(
         enRecord: enRecord,
-        amRecord: model.amRecords.firstWhere((e) => e.fccId == enRecord.fccId));
+        amRecord: model.amRecords.firstWhere((e) => e.fccId == enRecord.fccId),
+    relatedRecords: getRelatedRecords(enRecord));
+  }
+
+  List<EnRecord> getRelatedRecords(EnRecord enRecord) {
+    return model.enRecords
+        .where((e) => e.frn == enRecord.frn && e.fccId != enRecord.fccId)
+        .toList();
   }
 }

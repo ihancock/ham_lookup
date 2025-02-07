@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:ham_lookup/controllers/aggregate/home_view_controller.dart';
 import 'package:ham_lookup/model_provider/model_provider.dart';
-import 'package:ham_lookup/types/am_record.dart';
 import 'package:ham_lookup/types/en_record.dart';
-import 'package:ham_lookup/types/ham.dart';
 import 'package:ham_lookup/views/subviews/search_view.dart';
 import 'package:ham_lookup/widgets/app_bar_generator.dart';
+import 'package:ham_lookup/widgets/ham_details.dart';
 import 'package:ham_lookup/widgets/ham_entry_row.dart';
 import 'package:ham_lookup/widgets/ham_header_row.dart';
 import 'package:ham_lookup/widgets/loading_indicator.dart';
@@ -45,7 +44,9 @@ class _HomeViewState extends ModelState<HomeView, HomeViewController> {
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: SizedBox(
-                width: MediaQuery.of(context).size.width - 16,
+                width: MediaQuery.of(context).size.width> 1100?
+                    MediaQuery.of(context).size.width - 16:
+                    1100,
                 child: Column(
                   children: [
                     HamHeaderRow(),
@@ -55,15 +56,20 @@ class _HomeViewState extends ModelState<HomeView, HomeViewController> {
                       child: ListView.builder(
                           prototypeItem: HamEntryRow(
                             enRecord: EnRecord.empty(),
-                            onTap: () => Ham(
-                                enRecord: EnRecord.empty(),
-                                amRecord: AmRecord.empty()),
+                            onTap: () => HamDetails(
+                                enRecord: EnRecord.empty()),
                           ),
                           itemCount: results.length,
                           itemBuilder: (context, idx) {
                             final enRecord = results[idx];
-                            return HamEntryRow(enRecord: enRecord, onTap: ()=>controller.fccDatabaseController.hamFromEnRecord(
-                                enRecord),);
+                            return HamEntryRow(
+                              enRecord: enRecord,
+                              onTap: () {
+                                return HamDetails(
+                                  enRecord: enRecord
+                                );
+                              },
+                            );
                           }),
                     ),
                   ],

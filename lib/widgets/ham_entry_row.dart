@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:ham_lookup/types/en_record.dart';
-import 'package:ham_lookup/types/ham.dart';
+
 import 'package:ham_lookup/widgets/ham_details.dart';
 
 class HamEntryRow extends StatefulWidget {
   final EnRecord enRecord;
-  final Ham Function() onTap;
+  final HamDetails Function() onTap;
 
   const HamEntryRow({super.key, required this.enRecord, required this.onTap});
   
@@ -37,7 +37,7 @@ class _HamEntryRowState extends State<HamEntryRow> {
               pageBuilder: (context, animation, secondaryAnimation) {
                 return AlertDialog(
                   title: Text('Details'),
-                  content: HamDetails(ham: widget.onTap()),
+                  content: widget.onTap(),
                   actions: [
                     TextButton(
                         onPressed: () {
