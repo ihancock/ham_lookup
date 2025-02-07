@@ -92,7 +92,7 @@ class _SyncStatusFooterState
         break;
       case SyncStatus.complete:
         syncWidget = Text(
-          'Synced  ${controller.model.hams.length} records',
+          'Synced  ${controller.model.enRecords.length} records',
           style: TextStyle(color: Colors.green),
         );
         break;

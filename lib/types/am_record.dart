@@ -32,6 +32,24 @@ class AmRecord {
       required this.previousOperatorClass,
       required this.trusteeName});
 
+  AmRecord.empty():
+      fccId = '',
+      callSign = '',
+      operatorClass = '',
+      groupCode = '',
+      regionCode = '',
+      trusteeCallSign = '',
+      trusteeIndicator = '',
+      physicianCertification = '',
+      veSignature = '',
+      systemicCallSignChange = '',
+      vanityCallSignChange = '',
+      vanityRelationShip = '',
+      previousCallSign = '',
+      previousOperatorClass = '',
+      trusteeName = '';
+
+
   @override
   String toString() {
     return '{'

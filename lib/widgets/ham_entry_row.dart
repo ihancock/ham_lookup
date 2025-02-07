@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:ham_lookup/types/en_record.dart';
 import 'package:ham_lookup/types/ham.dart';
 import 'package:ham_lookup/widgets/ham_details.dart';
 
 class HamEntryRow extends StatefulWidget {
-  final Ham ham;
+  final EnRecord enRecord;
+  final Ham Function() onTap;
 
-  const HamEntryRow({super.key, required this.ham});
+  const HamEntryRow({super.key, required this.enRecord, required this.onTap});
+  
+  
 
   @override
   State<HamEntryRow> createState() => _HamEntryRowState();
@@ -28,13 +32,12 @@ class _HamEntryRowState extends State<HamEntryRow> {
       }),
       child: GestureDetector(
         onTap: () {
-          print('${widget.ham}');
           showGeneralDialog(
               context: context,
               pageBuilder: (context, animation, secondaryAnimation) {
                 return AlertDialog(
                   title: Text('Details'),
-                  content: HamDetails(ham: widget.ham),
+                  content: HamDetails(ham: widget.onTap()),
                   actions: [
                     TextButton(
                         onPressed: () {
@@ -55,35 +58,35 @@ class _HamEntryRowState extends State<HamEntryRow> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SizedBox(width: 100, child: Text(widget.ham.fccId)),
-              SizedBox(width: 101, child: Text(widget.ham.callSign)),
+              SizedBox(width: 100, child: Text(widget.enRecord.fccId)),
+              SizedBox(width: 101, child: Text(widget.enRecord.callSign)),
               SizedBox(
                   width: 200,
                   child: Text(
-                    widget.ham.entityName,
+                    widget.enRecord.entityName,
                     overflow: TextOverflow.ellipsis,
                   )),
               SizedBox(
                   width: 220,
                   child: Text(
-                    widget.ham.streetAddress,
+                    widget.enRecord.streetAddress,
                   )),
               SizedBox(
                   width: 180,
                   child: Text(
-                    widget.ham.city,
+                    widget.enRecord.city,
                   )),
               SizedBox(
                   width: 100,
                   child: Text(
-                    widget.ham.state,
+                    widget.enRecord.state,
                   )),
               SizedBox(
                   width: 120,
                   child: Text(
-                    (widget.ham.zip.length) > 5
-                        ? '${widget.ham.zip.substring(0, 5)}-${widget.ham.zip.substring(5)}'
-                        : widget.ham.zip,
+                    (widget.enRecord.zip.length) > 5
+                        ? '${widget.enRecord.zip.substring(0, 5)}-${widget.enRecord.zip.substring(5)}'
+                        : widget.enRecord.zip,
                   ))
             ],
           ),

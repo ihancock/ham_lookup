@@ -8,10 +8,11 @@ import 'package:ham_lookup/models/sort_details.dart';
 import 'package:ham_lookup/string_extensions.dart';
 import 'package:ham_lookup/types/am_record.dart';
 import 'package:ham_lookup/types/applicant_type.dart';
+import 'package:ham_lookup/types/en_record.dart';
 import 'package:ham_lookup/types/entity_type.dart';
-import 'package:ham_lookup/types/ham.dart';
 import 'package:ham_lookup/model_provider/model_provider.dart';
 import 'package:ham_lookup/models/fcc_database.dart';
+import 'package:ham_lookup/types/ham.dart';
 import 'package:ham_lookup/types/status_code.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
@@ -46,35 +47,29 @@ class FccDatabaseController extends ModelController<FccDatabase> {
       preferences ??= await SharedPreferences.getInstance();
       final now = DateTime.now();
       final lastSyncString = preferences?.getString('lastSync');
-      print(lastSyncString);
       DateTime? lastSync = DateTime.tryParse(lastSyncString ?? '');
       try {
         if ((lastSync == null || now.difference(lastSync).inDays > 7) &&
             online) {
-          print('Performing full sync');
           final response = await http.get(Uri.parse(
               'https://data.fcc.gov/download/pub/uls/complete/l_amat.zip'));
           await preferences!.setString('lastSync', now.toIso8601String());
           await _archiveResponse(response, suffix: 'complete');
         }
-        if (model.hams.isEmpty) {
+        if (model.enRecords.isEmpty) {
           await _processArchive(suffix: 'complete');
         }
-        print('Count after complete sync: ${model.hams.length}');
         if (lastSync == null || now.difference(lastSync).inMinutes > 59) {
           lastSync = now;
-          print('Performing daily sync');
           final days = calculateDaysFileSuffixes(lastSync);
           for (final day in days) {
             try {
               if (online) {
                 final response = await http.get(Uri.parse(
                     'https://data.fcc.gov/download/pub/uls/daily/l_am_${day}.zip'));
-                print('Processing response for $day');
                 await _archiveResponse(response, suffix: '$day');
               }
               await _processArchive(suffix: '$day');
-              print('Count after day $day sync: ${model.hams.length}');
             } catch (e) {
               debugPrint(e.toString());
             }
@@ -105,16 +100,19 @@ class FccDatabaseController extends ModelController<FccDatabase> {
   }
 
   Future<void> _processArchive({required String suffix}) async {
+
+    List<Future> tasks = [];
+
     final Directory tempDir = await getTemporaryDirectory();
     final Directory directory = Directory('${tempDir.path}/$suffix');
     final enDataFile = File('${directory.path}/EN.dat');
-    await enDataFile
+    tasks.add(enDataFile
         .openRead()
         .transform(utf8.decoder)
         .transform(LineSplitter())
         .forEach((line) async {
       final fields = line.split('|');
-      model.hams.add(Ham(
+      model.enRecords.add(EnRecord(
           fccId: fields[1],
           ulsFileNumber: fields[2],
           ebfNumber: fields[3],
@@ -122,11 +120,11 @@ class FccDatabaseController extends ModelController<FccDatabase> {
           entityType: EntityType.values
               .firstWhereOrNull((e) => e.name.toUpperCase() == fields[5]),
           licenseId: fields[6],
-          entityName: fields[7],
-          firstName: fields[8],
+          entityName: fields[7].captitalizeFirstLetters().trim(),
+          firstName: fields[8].captitalizeFirstLetters().trim(),
           middleInitial: fields[9],
-          lastName: fields[10],
-          suffix: fields[11],
+          lastName: fields[10].captitalizeFirstLetters().trim(),
+          suffix: fields[11].captitalizeFirstLetters().trim(),
           phone: fields[12],
           fax: fields[13],
           email: fields[14],
@@ -137,7 +135,7 @@ class FccDatabaseController extends ModelController<FccDatabase> {
           state: fields[17],
           zip: fields[18],
           poBox: fields[19],
-          attentionLine: fields[20],
+          attentionLine: fields[20].captitalizeFirstLetters().trim(),
           sgin: fields[21],
           frn: fields[22],
           applicantType: ApplicantType.values
@@ -146,15 +144,15 @@ class FccDatabaseController extends ModelController<FccDatabase> {
           statusCode: StatusCode.values
               .firstWhereOrNull((e) => e.name.toUpperCase() == fields[25]),
           statusDate: fields[26]));
-    });
+    }));
     final amDataFile = File('${directory.path}/AM.dat');
-    await amDataFile
+    tasks.add(amDataFile
         .openRead()
         .transform(utf8.decoder)
         .transform(LineSplitter())
         .forEach((line) async {
       final fields = line.split('|');
-      final amRecord = AmRecord(
+      model.amRecords.add(AmRecord(
           fccId: fields[1],
           callSign: fields[4],
           operatorClass: fields[5],
@@ -169,13 +167,9 @@ class FccDatabaseController extends ModelController<FccDatabase> {
           vanityRelationShip: fields[14],
           previousCallSign: fields[15],
           previousOperatorClass: fields[16],
-          trusteeName: fields[17]);
-      if (fields.contains('WM5Q') || fields.contains('KC5NTL')) {
-        print(amRecord);
-      }
-
-      // model.hams.where((ham) => ham.fccId == amRecord.fccId && ham.callSign)
-    });
+          trusteeName: fields[17]));
+    }));
+    await Future.wait(tasks);
   }
 
   List<String> calculateDaysFileSuffixes(DateTime lastSync) {
@@ -189,32 +183,30 @@ class FccDatabaseController extends ModelController<FccDatabase> {
     }
   }
 
-  List<Ham> searchByCallSign(String callSign) {
-    return model.hams
+  List<EnRecord> searchByCallSign(String callSign) {
+    return model.enRecords
         .where((e) => e.callSign.startsWith(callSign.toUpperCase()))
         .toList();
   }
 
-  List<Ham> searchByName(String name) {
-    print('searching for $name');
-    var results = model.hams
-        .where(
-            (e) => (e.entityName).toUpperCase().startsWith(name.toUpperCase()))
+  List<EnRecord> searchByName(String name) {
+    var results = model.enRecords
+        .where((e) => (e.entityName).toUpperCase().contains(name.toUpperCase()))
         .toList();
     results.sort((a, b) => (a.entityName).compareTo(b.entityName));
     return results;
   }
 
-  List<Ham> searchByCity(String city) {
-    var results = model.hams
+  List<EnRecord> searchByCity(String city) {
+    var results = model.enRecords
         .where((e) => e.city.startsWith(city.captitalizeFirstLetters()) == true)
         .toList();
     results.sort((a, b) => (a.entityName).compareTo(b.entityName));
     return results;
   }
 
-  List<Ham> searchByAddress(String address) {
-    var results = model.hams
+  List<EnRecord> searchByAddress(String address) {
+    var results = model.enRecords
         .where((e) =>
             e.streetAddress.toLowerCase().contains(address.toLowerCase()) ==
             true)
@@ -223,8 +215,8 @@ class FccDatabaseController extends ModelController<FccDatabase> {
     return results;
   }
 
-  List<Ham> searchByState(String state) {
-    var results = model.hams
+  List<EnRecord> searchByState(String state) {
+    var results = model.enRecords
         .where((e) => e.state.startsWith(state.toUpperCase()) == true)
         .toList();
     results.sort((a, b) => (a.entityName).compareTo(b.entityName));
@@ -238,9 +230,8 @@ class FccDatabaseController extends ModelController<FccDatabase> {
     });
   }
 
-  List<Ham> sortedList(int column, SortDirection direction) {
-    List<Ham> results = [];
-    print('Tab is ${model.tab.name}');
+  List<EnRecord> sortedList(int column, SortDirection direction) {
+    List<EnRecord> results = [];
     if (model.tab == SearchTab.callSign) {
       results = searchByCallSign(model.searchTerm ?? '--');
     } else if (model.tab == SearchTab.name) {
@@ -310,5 +301,11 @@ class FccDatabaseController extends ModelController<FccDatabase> {
       default:
     }
     return results;
+  }
+
+  Ham hamFromEnRecord(EnRecord enRecord) {
+    return Ham(
+        enRecord: enRecord,
+        amRecord: model.amRecords.firstWhere((e) => e.fccId == enRecord.fccId));
   }
 }

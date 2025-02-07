@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ham_lookup/controllers/aggregate/home_view_controller.dart';
 import 'package:ham_lookup/model_provider/model_provider.dart';
+import 'package:ham_lookup/types/am_record.dart';
+import 'package:ham_lookup/types/en_record.dart';
 import 'package:ham_lookup/types/ham.dart';
 import 'package:ham_lookup/views/subviews/search_view.dart';
 import 'package:ham_lookup/widgets/app_bar_generator.dart';
@@ -19,7 +21,7 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends ModelState<HomeView, HomeViewController> {
   _HomeViewState() : super(controller: HomeViewController());
 
-  List<Ham> results = [];
+  List<EnRecord> results = [];
 
   @override
   Widget build(BuildContext context) {
@@ -51,11 +53,17 @@ class _HomeViewState extends ModelState<HomeView, HomeViewController> {
                       padding: const EdgeInsets.fromLTRB(8, 0, 8, 4),
                       height: MediaQuery.of(context).size.height - 358,
                       child: ListView.builder(
-                          prototypeItem: HamEntryRow(ham: Ham.empty()),
+                          prototypeItem: HamEntryRow(
+                            enRecord: EnRecord.empty(),
+                            onTap: () => Ham(
+                                enRecord: EnRecord.empty(),
+                                amRecord: AmRecord.empty()),
+                          ),
                           itemCount: results.length,
                           itemBuilder: (context, idx) {
-                            final ham = results[idx];
-                            return HamEntryRow(ham: ham);
+                            final enRecord = results[idx];
+                            return HamEntryRow(enRecord: enRecord, onTap: ()=>controller.fccDatabaseController.hamFromEnRecord(
+                                enRecord),);
                           }),
                     ),
                   ],
