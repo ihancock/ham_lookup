@@ -84,9 +84,45 @@ class _SyncStatusFooterState
           style: TextStyle(color: Colors.red),
         );
         break;
-      case SyncStatus.inProgress:
+      case SyncStatus.amFile:
         syncWidget = const Text(
-          'Syncing FCC Database',
+          'Syncing Amateur File',
+          style: TextStyle(color: Colors.black38),
+        );
+        break;
+      case SyncStatus.coFile:
+        syncWidget = const Text(
+          'Syncing Comments File',
+          style: TextStyle(color: Colors.black38),
+        );
+        break;
+      case SyncStatus.downloading:
+        syncWidget = const Text(
+          'Downloading',
+          style: TextStyle(color: Colors.black38),
+        );
+        break;
+      case SyncStatus.enFile:
+        syncWidget = const Text(
+          'Syncing Entity File',
+          style: TextStyle(color: Colors.black38),
+        );
+        break;
+      case SyncStatus.hdFile:
+        syncWidget = const Text(
+          'Syncing Header File',
+          style: TextStyle(color: Colors.black38),
+        );
+        break;
+      case SyncStatus.hsFile:
+        syncWidget = const Text(
+          'Syncing History File',
+          style: TextStyle(color: Colors.black38),
+        );
+        break;
+      case SyncStatus.syncing:
+        syncWidget = const Text(
+          'Syncing',
           style: TextStyle(color: Colors.black38),
         );
         break;
@@ -115,13 +151,16 @@ class _SyncStatusFooterState
                     color: Colors.red,
                   ),
             Padding(
-                padding: const EdgeInsets.only(left: 8, right: 16),
+                padding: const EdgeInsets.only(left: 8, right: 8),
                 child: syncWidget),
-            IconButton(
-              icon: const Icon(Icons.sync),
-              onPressed: () async {
-                await controller.downloadDatabase(connected);
-              },
+            Padding(
+              padding: const EdgeInsets.only(right:8.0),
+              child: IconButton(
+                icon: const Icon(Icons.sync),
+                onPressed: () async {
+                  await controller.downloadDatabase(connected);
+                },
+              ),
             ),
           ],
         ));

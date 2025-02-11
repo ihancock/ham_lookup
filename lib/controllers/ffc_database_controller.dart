@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+
 import 'package:archive/archive_io.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,7 @@ import 'package:ham_lookup/model_provider/model_provider.dart';
 import 'package:ham_lookup/models/fcc_database.dart';
 import 'package:ham_lookup/types/ham.dart';
 import 'package:ham_lookup/types/hd_record.dart';
+import 'package:ham_lookup/types/hs_record.dart';
 import 'package:ham_lookup/types/operator_class.dart';
 import 'package:ham_lookup/types/status_code.dart';
 import 'package:http/http.dart' as http;
@@ -45,7 +47,7 @@ class FccDatabaseController extends ModelController<FccDatabase> {
       syncInProgress = true;
 
       updateModel(() {
-        model.syncStatus = SyncStatus.inProgress;
+        model.syncStatus = SyncStatus.syncing;
       });
       preferences ??= await SharedPreferences.getInstance();
       final now = DateTime.now();
@@ -54,6 +56,9 @@ class FccDatabaseController extends ModelController<FccDatabase> {
       try {
         if ((lastSync == null || now.difference(lastSync).inDays > 7) &&
             online) {
+          updateModel(() {
+            model.syncStatus = SyncStatus.downloading;
+          });
           final response = await http.get(Uri.parse(
               'https://data.fcc.gov/download/pub/uls/complete/l_amat.zip'));
           await preferences!.setString('lastSync', now.toIso8601String());
@@ -102,13 +107,15 @@ class FccDatabaseController extends ModelController<FccDatabase> {
     await extractArchiveToDisk(archive, directory.path);
   }
 
-  Future<void> _processArchive({required String suffix}) async {
-    List<Future> tasks = [];
 
+  Future<void> _processArchive({required String suffix}) async {
     final Directory tempDir = await getTemporaryDirectory();
     final Directory directory = Directory('${tempDir.path}/$suffix');
+    updateModel(() {
+      model.syncStatus = SyncStatus.enFile;
+    });
     final enDataFile = File('${directory.path}/EN.dat');
-    tasks.add(enDataFile
+    await enDataFile
         .openRead()
         .transform(utf8.decoder)
         .transform(LineSplitter())
@@ -146,9 +153,12 @@ class FccDatabaseController extends ModelController<FccDatabase> {
           statusCode: StatusCode.values
               .firstWhereOrNull((e) => e.name.toUpperCase() == fields[25]),
           statusDate: fields[26]));
-    }));
+    });
+    updateModel(() {
+      model.syncStatus = SyncStatus.amFile;
+    });
     final amDataFile = File('${directory.path}/AM.dat');
-    tasks.add(amDataFile
+    await amDataFile
         .openRead()
         .transform(utf8.decoder)
         .transform(LineSplitter())
@@ -171,9 +181,12 @@ class FccDatabaseController extends ModelController<FccDatabase> {
           previousCallSign: fields[15],
           previousOperatorClass: fields[16],
           trusteeName: fields[17]));
-    }));
+    });
+    updateModel(() {
+      model.syncStatus = SyncStatus.hdFile;
+    });
     final hdDataFile = File('${directory.path}/HD.dat');
-    tasks.add(hdDataFile
+    await hdDataFile
         .openRead()
         .transform(utf8.decoder)
         .transform(LineSplitter())
@@ -236,11 +249,14 @@ class FccDatabaseController extends ModelController<FccDatabase> {
           freq900MhzTransitionPlanCertification: fields[56],
           freq900MhzReturnSpectrumCertification: fields[57],
           freq900MhzPaymentCertification: fields[58]));
-    }));
+    });
+    updateModel(() {
+      model.syncStatus = SyncStatus.coFile;
+    });
     final coDataFile = File('${directory.path}/CO.dat');
     bool deferred = false;
     String deferredLine = '';
-    tasks.add(coDataFile
+    await coDataFile
         .openRead()
         .transform(utf8.decoder)
         .transform(LineSplitter())
@@ -269,8 +285,29 @@ class FccDatabaseController extends ModelController<FccDatabase> {
                 .firstWhereOrNull((e) => e.name.toUpperCase() == fields[6]),
             statusDate: fields[7]));
       }
-    }));
-    await Future.wait(tasks);
+    });
+    updateModel(() {
+      model.syncStatus = SyncStatus.hsFile;
+    });
+    final hsDataFile = File('${directory.path}/HS.dat');
+    await hsDataFile
+        .openRead()
+        .transform(utf8.decoder)
+        .transform(LineSplitter())
+        .forEach((line) async {
+      final fields = line.split('|');
+      model.hsRecords.add(HsRecord(
+          fccId: int.parse(fields[1]),
+          ulsFileNumber: fields[2],
+          callSign: fields[3],
+          logDate: convertFccDateToDateTime(fields[4]),
+          code: fields[5]));
+    });
+    final invalidHistoryCodes =
+        model.hsRecords.where((e) => e.description == null).toList();
+    for (final record in invalidHistoryCodes) {
+      print(record);
+    }
   }
 
   List<String> calculateDaysFileSuffixes(DateTime lastSync) {
@@ -407,6 +444,7 @@ class FccDatabaseController extends ModelController<FccDatabase> {
         enRecord: enRecord,
         amRecord: model.amRecords.firstWhere((e) => e.fccId == enRecord.fccId),
         hdRecord: model.hdRecords.firstWhere((e) => e.fccId == enRecord.fccId),
+        hsRecord: model.hsRecords.firstWhere((e) => e.fccId == enRecord.fccId),
         coRecords:
             model.coRecords.where((e) => e.fccId == enRecord.fccId).toList(),
         relatedRecords: getRelatedRecords(enRecord));
@@ -416,5 +454,10 @@ class FccDatabaseController extends ModelController<FccDatabase> {
     return model.enRecords
         .where((e) => e.frn == enRecord.frn && e.fccId != enRecord.fccId)
         .toList();
+  }
+
+  DateTime convertFccDateToDateTime(String date) {
+    final dateParts = date.split('/');
+    return DateTime.parse('${dateParts[2]}${dateParts[1]}-${dateParts[0]}');
   }
 }
