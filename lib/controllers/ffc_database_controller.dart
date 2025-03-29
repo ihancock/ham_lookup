@@ -442,9 +442,9 @@ class FccDatabaseController extends ModelController<FccDatabase> {
   Ham hamFromEnRecord(EnRecord enRecord) {
     return Ham(
         enRecord: enRecord,
-        amRecord: model.amRecords.firstWhere((e) => e.fccId == enRecord.fccId),
-        hdRecord: model.hdRecords.firstWhere((e) => e.fccId == enRecord.fccId),
-        hsRecord: model.hsRecords.firstWhere((e) => e.fccId == enRecord.fccId),
+        amRecord: model.amRecords.firstWhereOrNull((e) => e.fccId == enRecord.fccId),
+        hdRecord: model.hdRecords.firstWhereOrNull((e) => e.fccId == enRecord.fccId),
+        hsRecord: model.hsRecords.firstWhereOrNull((e) => e.fccId == enRecord.fccId),
         coRecords:
             model.coRecords.where((e) => e.fccId == enRecord.fccId).toList(),
         relatedRecords: getRelatedRecords(enRecord));

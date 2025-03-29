@@ -3,6 +3,7 @@ import 'package:ham_lookup/controllers/ffc_database_controller.dart';
 import 'package:ham_lookup/model_provider/model_provider.dart';
 import 'package:ham_lookup/types/en_record.dart';
 import 'package:ham_lookup/types/ham.dart';
+import 'package:ham_lookup/widgets/section.dart';
 
 class HamDetails extends StatefulWidget {
   final EnRecord enRecord;
@@ -99,26 +100,26 @@ class _HamDetailsState extends ModelState<HamDetails, FccDatabaseController> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildRow('Operator Class:',
-                      ham.amRecord.operatorClass?.description ?? ''),
-                  _buildRow('Group Code:', ham.amRecord.groupCode),
-                  _buildRow('Region Code:', ham.amRecord.regionCode),
-                  _buildRow('Trustee Call Sign:', ham.amRecord.trusteeCallSign),
+                      ham.amRecord?.operatorClass?.description ?? ''),
+                  _buildRow('Group Code:', ham.amRecord?.groupCode??''),
+                  _buildRow('Region Code:', ham.amRecord?.regionCode??''),
+                  _buildRow('Trustee Call Sign:', ham.amRecord?.trusteeCallSign??''),
                   _buildRow(
-                      'Trustee Indicator:', ham.amRecord.trusteeIndicator),
+                      'Trustee Indicator:', ham.amRecord?.trusteeIndicator??''),
                   _buildRow('Physician Certification:',
-                      ham.amRecord.physicianCertification),
-                  _buildRow('VE Signature:', ham.amRecord.veSignature),
+                      ham.amRecord?.physicianCertification??''),
+                  _buildRow('VE Signature:', ham.amRecord?.veSignature??''),
                   _buildRow('Systemic Call Sign Change:',
-                      ham.amRecord.systemicCallSignChange),
+                      ham.amRecord?.systemicCallSignChange??''),
                   _buildRow('Vanity Call Sign Change:',
-                      ham.amRecord.vanityCallSignChange),
+                      ham.amRecord?.vanityCallSignChange??''),
                   _buildRow(
-                      'Vanity Relation Ship:', ham.amRecord.vanityRelationShip),
+                      'Vanity Relation Ship:', ham.amRecord?.vanityRelationShip??''),
                   _buildRow(
-                      'Previous CallSign:', ham.amRecord.previousCallSign),
+                      'Previous CallSign:', ham.amRecord?.previousCallSign??''),
                   _buildRow('Previous Operator Class:',
-                      ham.amRecord.previousOperatorClass),
-                  _buildRow('Trustee Name:', ham.amRecord.trusteeName),
+                      ham.amRecord?.previousOperatorClass??''),
+                  _buildRow('Trustee Name:', ham.amRecord?.trusteeName??''),
                 ],
               ),
             ),
@@ -129,32 +130,11 @@ class _HamDetailsState extends ModelState<HamDetails, FccDatabaseController> {
   }
 
   Widget _buildSection(BuildContext context, String title, Widget content) {
-    return Container(
+    return Section(
       width: MediaQuery.of(context).size.width - 32,
-      padding: const EdgeInsets.all(8),
-      margin: const EdgeInsets.only(bottom: 8),
-      decoration: BoxDecoration(
-          border: Border.all(color: Colors.black26),
-          borderRadius: BorderRadius.circular(4),
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-                color: Colors.black12, blurRadius: 4, offset: Offset(0, 4))
-          ]),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: MediaQuery.of(context).size.width - 32,
-            color: Colors.black12,
-            child: Text(
-              title,
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-          ),
-          content,
-        ],
-      ),
+      title: title,
+      child:
+          content
     );
   }
 

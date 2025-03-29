@@ -6,9 +6,9 @@ import 'package:ham_lookup/types/hs_record.dart';
 
 class Ham {
   final EnRecord enRecord;
-  final AmRecord amRecord;
-  final HdRecord hdRecord;
-  final HsRecord hsRecord;
+  final AmRecord? amRecord;
+  final HdRecord? hdRecord;
+  final HsRecord? hsRecord;
   final List<CoRecord> coRecords;
   final List<EnRecord> relatedRecords;
 

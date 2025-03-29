@@ -52,7 +52,7 @@ class _HomeViewState extends ModelState<HomeView, HomeViewController> {
                     HamHeaderRow(),
                     Container(
                       padding: const EdgeInsets.fromLTRB(8, 0, 8, 4),
-                      height: MediaQuery.of(context).size.height - 358,
+                      height: MediaQuery.of(context).size.height - 296,
                       child: ListView.builder(
                           prototypeItem: HamEntryRow(
                             enRecord: EnRecord.empty(),
